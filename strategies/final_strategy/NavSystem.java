@@ -79,8 +79,10 @@ public class NavSystem {
                 int forwardInt = chosenDirection.ordinal();
                 Direction trialDir = allDirections[(forwardInt+directionalOffset+8)%8];
                 if(rc.getType() == RobotType.SOLDIER){
-                	if(canMove(trialDir,selfAvoiding,rc) && BaseRobot.senseNearbyTowersStat(rc.getLocation().add(trialDir))==0){
+                    rc.setIndicatorString(1, "Trying to get to tower");
+                	if(canMove(trialDir,selfAvoiding,rc) && BaseRobot.safeToMoveTo(rc.getLocation().add(trialDir))==0){
                 		rc.move(trialDir);
+                        rc.setIndicatorString(1, "Got to tower");
                 		break;
                 	}
                 }
