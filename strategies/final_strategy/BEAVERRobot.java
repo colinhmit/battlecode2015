@@ -55,13 +55,13 @@ public class BEAVERRobot extends BaseRobot {
                         rc.broadcast(40, minerFactoriesBuilt+1);
                         building=true;
                     }			   
-			    } else if (rc.hasBuildRequirements(RobotType.HELIPAD) && helipadsBuilt < 1 && minerFactoriesBuilt>0) {
-                    Direction buildDirection = getBuildDirectionCheckerBoard(RobotType.HELIPAD);
-                    if (buildDirection!=null) {
-                        rc.build(buildDirection, RobotType.HELIPAD);
-                        rc.broadcast(43, helipadsBuilt+1);
-                        building=true;
-                    }
+//			    } else if (rc.hasBuildRequirements(RobotType.HELIPAD) && helipadsBuilt < 1 && minerFactoriesBuilt>0) {
+//                    Direction buildDirection = getBuildDirectionCheckerBoard(RobotType.HELIPAD);
+//                    if (buildDirection!=null) {
+//                        rc.build(buildDirection, RobotType.HELIPAD);
+//                        rc.broadcast(43, helipadsBuilt+1);
+//                        building=true;
+//                    }
 			    } else if (rc.hasBuildRequirements(RobotType.SUPPLYDEPOT) && supplyDepotsBuilt < 2 || ore>2000 && supplyDepotsBuilt < 5) {
                     Direction buildDirection = getBuildDirectionCheckerBoard(RobotType.SUPPLYDEPOT);
                     if (buildDirection!=null) {

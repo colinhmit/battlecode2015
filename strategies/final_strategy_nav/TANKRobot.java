@@ -1,8 +1,9 @@
 package final_strategy_nav;
 import battlecode.common.Clock;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.*;
+
+
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.GameConstants;
@@ -19,6 +20,9 @@ public class TANKRobot extends BaseRobot {
     public boolean hasBeenSupplied;
 
     public static int downloadReady;
+    
+    public MapLocation targetToProtect;
+    public Direction dirTowardsLauncher;
 
 
 	public TANKRobot(RobotController rc) throws GameActionException {
@@ -28,6 +32,8 @@ public class TANKRobot extends BaseRobot {
 		hasBeenSupplied = false;
         BroadcastSystem.write(BroadcastSystem.myInstrChannel, TANK_CONS);
         BroadcastSystem.setNotCollecting();
+        targetToProtect = getOurClosestTowerToThem();
+        dirTowardsLauncher = null;
 	}
 
 	@Override
@@ -42,17 +48,30 @@ public class TANKRobot extends BaseRobot {
             downloadReady = BroadcastSystem.read(BroadcastSystem.myInstrChannel);
 
             RobotInfo[] enemyRobots = getEnemiesInAttackingRange(RobotType.TANK);
+            RobotInfo[] enemyRobotsCanSee = rc.senseNearbyRobots(24,myTeam);
             MapLocation currentLocation = rc.getLocation();
             RobotInfo[] nearbyAllies = rc.senseNearbyRobots(rc.getLocation(),GameConstants.SUPPLY_TRANSFER_RADIUS_SQUARED,rc.getTeam());
             double supplyLevel = rc.getSupplyLevel();
             if(rc.getSupplyLevel() > 0){
             	hasBeenSupplied = true;
             }
-            if (enemyRobots.length>0) {
-                if (rc.isWeaponReady()) {
-                    attackLeastHealthEnemyTanks(enemyRobots);
-                }
-            }
+//            if(enemyRobotsCanSee.length >0){
+//            	for(RobotInfo enemy : enemyRobotsCanSee){
+//            		if(enemy.type == RobotType.LAUNCHER){
+//            			NavSystem.smartNav(enemy.location, false);
+//            			break;
+//            		} else if(enemy.type == RobotType.MISSILE){
+//            			NavSystem.smartNav(enemy.location, false);
+//            			break;
+//            		}
+//            	}
+//            }
+//            if (enemyRobots.length>0) {
+//            	
+//                if (rc.isWeaponReady()) {
+//                    attackLeastHealthEnemyTanks(enemyRobots);
+//                }
+//            }
             if (rc.isCoreReady()) {
                 if ((supplyLevel < 50 && currentLocation.distanceSquaredTo(this.myHQ)<25) || !hasBeenSupplied) {
                     NavSystem.dumbNav(this.myHQ);
@@ -86,20 +105,62 @@ public class TANKRobot extends BaseRobot {
                 //rc.setIndicatorString(1, "not downloading");
                 BroadcastSystem.write(BroadcastSystem.myInstrChannel, 0);
             }
-
+            if(dirTowardsLauncher != null && rc.isCoreReady()){
+            	NavSystem.smartNav(currentLocation.add(dirTowardsLauncher), false);
+            }
+            if(enemyRobotsCanSee.length >0){
+            	for(RobotInfo enemy : enemyRobotsCanSee){
+            		if(enemy.type == RobotType.LAUNCHER){
+            			//NavSystem.smartNav(enemy.location, false);
+//            			if(rc.isCoreReady()){
+//            				rc.move(currentLocation.directionTo(enemy.location));
+//            			}
+            			dirTowardsLauncher = currentLocation.directionTo(enemy.location);
+            			break;
+            		} else if(enemy.type == RobotType.MISSILE){
+            			//NavSystem.smartNav(enemy.location, false);
+//            			if(rc.isCoreReady()){
+//            				rc.move(currentLocation.directionTo(enemy.location));
+//            			}
+            			dirTowardsLauncher = currentLocation.directionTo(enemy.location);
+            			break;
+            		}
+            	}
+            }
+            else if (enemyRobots.length>0) {
+            	
+                if (rc.isWeaponReady()) {
+                    attackLeastHealthEnemyTanks(enemyRobots);
+                }
+            }
+            
             if (Clock.getRoundNum() < 1400) {
                 if (rc.isCoreReady()) {
                     if (supplyLevel < 50 && currentLocation.distanceSquaredTo(this.myHQ)<30) {
                         NavSystem.smartNav(this.myHQ, false);
                     } else if (rc.senseNearbyRobots(20, this.theirTeam).length < 1 ) {
-                        MapLocation ourClosest = getOurClosestTowerToThem();
-                        RobotInfo[] neighbors = rc.senseNearbyRobots(rc.getLocation(),1,rc.getTeam());
+//                        MapLocation ourClosest = getOurClosestTowerToThem();
+//                        RobotInfo[] neighbors = rc.senseNearbyRobots(rc.getLocation(),1,rc.getTeam());
                         //System.out.println(neighbors.length);
-                        int numTanks = numTanksSurrounding(rc,neighbors);
+                        //int numTanks = numTanksSurrounding(rc,neighbors);
                         //System.out.println(numTanks);
                         double radiusOfTanks = rc.readBroadcast(TANK_PREVIOUS_CHAN)/Math.PI;
-                        if(currentLocation.distanceSquaredTo(ourClosest) > radiusOfTanks || rc.canMove(currentLocation.directionTo(ourClosest)) ) {
-                        	NavSystem.smartNav(ourClosest, false);
+                        for(MapLocation towerLoc : rc.senseEnemyTowerLocations()){
+                        	Direction directionTowardsTower = targetToProtect.directionTo(towerLoc);
+                        	MapLocation furthestTank = targetToProtect.add(directionTowardsTower, (int) Math.sqrt(radiusOfTanks));
+                        	int distance = towerLoc.distanceSquaredTo(furthestTank);
+                        	if(distance <=24){
+                        		int difference = 24 - distance;
+                        		int changeInTarget = (int)Math.sqrt(difference);
+                        		Direction dirFromTowerToLoc = towerLoc.directionTo(targetToProtect);
+                        		targetToProtect = targetToProtect.add(dirFromTowerToLoc,changeInTarget);
+                        	}
+                        }
+//                        if(currentLocation.distanceSquaredTo(ourClosest) > radiusOfTanks || rc.canMove(currentLocation.directionTo(ourClosest)) ) {
+//                        	NavSystem.smartNav(ourClosest, false);
+//                        }
+                        if(currentLocation.distanceSquaredTo(targetToProtect) > radiusOfTanks || rc.canMove(currentLocation.directionTo(targetToProtect)) ) {
+                        	NavSystem.smartNav(targetToProtect, false);
                         }
                     }
                 }

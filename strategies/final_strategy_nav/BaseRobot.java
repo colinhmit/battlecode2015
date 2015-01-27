@@ -49,6 +49,11 @@ public abstract class BaseRobot {
     public final static int MINER_PREVIOUS_CHAN = 35, MINER_CURRENT_CHAN = 36;
     public final static int SUPPLIER_DRONES_PREVIOUS_CHAN = 37, SUPPLIER_DRONES_CURRENT_CHAN= 38;
     
+    public final static int SOLDIERS_MADE = 39;
+    public final static int MINERS_TO_ATTACK_X = 50;
+    public final static int MINERS_TO_ATTACK_Y = 51;
+    public final static int NUM_MINERS_IN_POSITION = 52;
+    
     public final static int SUPPLIER_NEEDED = 100;
     public final static int SUPPLIER_START_QUEUE_CHAN = 101;
     public final static int SUPPLIER_END_QUEUE_CHAN = 102;
@@ -444,7 +449,13 @@ public abstract class BaseRobot {
 	    				transferAmount = Math.min((rc.getSupplyLevel()-ri.supplyLevel)/2, 1500);
 	    			}
 	    			rc.transferSupplies((int)transferAmount, ri.location);
-	    		} 
+	    		}  else if(ri.type == RobotType.SOLDIER){
+	    			transferAmount = (2000 - Clock.getRoundNum())*5;
+	    			if(rc.getSupplyLevel() < transferAmount){
+	    				transferAmount = Math.min((rc.getSupplyLevel()-ri.supplyLevel)/2, 1500);
+	    			}
+	    			rc.transferSupplies((int)transferAmount, ri.location);
+	    		}
     		}
     	}
     }
