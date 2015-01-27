@@ -163,6 +163,16 @@ public abstract class BaseRobot {
         return count;
     }
     
+    public int numMiners(RobotInfo[] enemies){
+    	int miners = 0;
+    	for(RobotInfo enemy : enemies){
+    		if(enemy.type == RobotType.MINER){
+    			miners ++;
+    		}
+    	}
+    	return miners;
+    }
+    
     public static void moveRandomly() throws GameActionException {
         Direction[] directions = RobotPlayer.directions;
         Collections.shuffle(Arrays.asList(directions));

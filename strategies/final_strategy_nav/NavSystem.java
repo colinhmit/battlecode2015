@@ -283,7 +283,7 @@ public class NavSystem {
 
 				int forwardInt = chosenDirection.ordinal();
 				Direction trialDir = allDirections[(forwardInt+directionalOffset+8)%8];
-				if(canMove(trialDir,selfAvoiding,rc)){
+				if(canMove(trialDir,selfAvoiding,rc) && BaseRobot.senseNearbyTowersStat(rc.getLocation().add(trialDir))==0){
 
 					rc.move(trialDir);
 

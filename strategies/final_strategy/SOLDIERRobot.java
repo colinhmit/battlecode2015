@@ -2,10 +2,10 @@ package final_strategy;
 
 import java.util.Random;
 
-
 import battlecode.common.Clock;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
+import battlecode.common.GameConstants;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
@@ -27,6 +27,7 @@ public class SOLDIERRobot extends BaseRobot {
 	public int towerNum;
 	public static Random random = new Random();
 	public MapLocation[] towers;
+	public MapLocation target;
 
 
 	public SOLDIERRobot(RobotController rc) throws GameActionException {
@@ -46,7 +47,12 @@ public class SOLDIERRobot extends BaseRobot {
 //		directionOfMiners = null;
 //		locationOfMiners = null;
 		towers = rc.senseEnemyTowerLocations();
-		towerNum = (rc.readBroadcast(SOLDIERS_MADE)) % towers.length;
+		towerNum = (rc.readBroadcast(SOLDIERS_MADE)) % (towers.length+1);
+		if(towerNum == towers.length){
+			target = DataCache.enemyHQ;
+		}else{
+			target = towers[towerNum];
+		}
 		rc.broadcast(SOLDIERS_MADE, rc.readBroadcast(SOLDIERS_MADE)+1);
 	}
 
@@ -75,6 +81,7 @@ public class SOLDIERRobot extends BaseRobot {
 			if(rc.getSupplyLevel() < 45 && enemiesAround.length == 0 && enemiesToAttack.length == 0){
 //				Direction dirToMove = NavSystem.dumbNav(myHQ);
 //				move(dirToMove,location);
+				NavSystem.dumbNav(myHQ);
 				
 			}
 			else if(enemiesToAttack.length == 0){
@@ -92,7 +99,8 @@ public class SOLDIERRobot extends BaseRobot {
 
 //						Direction dirToMove = NavSystem.dumbNav(towers[towerNum]);
 //						move(dirToMove,location);
-						NavSystem.dumbNav(towers[towerNum]);
+						
+						NavSystem.dumbNav(target);
 					}
 				} else {
 					boolean tanksOrLaunchers = false;
@@ -260,9 +268,10 @@ public class SOLDIERRobot extends BaseRobot {
 					}
 				}
 			}
-//			RobotInfo[] nearbyAllies = rc.senseNearbyRobots(24,myTeam);
-//			transferSpecificSupplies(RobotType.SOLDIER, rc, nearbyAllies);
-			rc.broadcast(SOLDIER_CURRENT_CHAN, SOLDIER_CURRENT_CHAN+1);
+			RobotInfo[] nearbyAllies = rc.senseNearbyRobots(GameConstants.SUPPLY_TRANSFER_RADIUS_SQUARED,myTeam);
+			
+			transferSpecificSupplies(RobotType.SOLDIER, rc, nearbyAllies);
+			rc.broadcast(SOLDIER_CURRENT_CHAN, rc.readBroadcast(SOLDIER_CURRENT_CHAN)+1);
 
 		} catch (Exception e) {
 			//                    System.out.println("caught exception before it killed us:");

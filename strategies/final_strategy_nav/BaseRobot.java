@@ -148,7 +148,7 @@ public abstract class BaseRobot {
         return closestOffset;
     }
     
-    public MapLocation getClosestTower() {
+    public static MapLocation getClosestTower() {
         MapLocation[] enemyTowers = rc.senseEnemyTowerLocations();
         if (enemyTowers.length ==0) {
             return null;
@@ -187,6 +187,23 @@ public abstract class BaseRobot {
                 count += 1;
         }
         if (newLocation.distanceSquaredTo(this.theirHQ)<=24) {
+            count+=1;
+        }
+        return count;
+    }
+    
+    public static int senseNearbyTowersStat(MapLocation location) {
+    	MapLocation[] enemyTowers = rc.senseEnemyTowerLocations();
+        int count = 0;
+        MapLocation newLocation = location.add(location.directionTo(rc.senseEnemyHQLocation()));
+        MapLocation newLocation2 = location.add(location.directionTo(getClosestTower()));
+        for (MapLocation tower : enemyTowers) {
+            if (newLocation.distanceSquaredTo(tower)<=24)
+                count += 1;
+            if (newLocation2.distanceSquaredTo(tower)<=24)
+                count+= 1;
+        }
+        if (newLocation.distanceSquaredTo(rc.senseEnemyHQLocation())<=24) {
             count+=1;
         }
         return count;

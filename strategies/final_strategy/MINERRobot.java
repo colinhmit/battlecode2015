@@ -34,6 +34,14 @@ public class MINERRobot extends BaseRobot {
             double oreCurrentLocation = rc.senseOre(currentLocation);
             double supplyLevel = rc.getSupplyLevel();
             double oreDensity = getOreDensity(currentLocation);
+            RobotInfo[] enemiesAround = rc.senseNearbyRobots(24,theirTeam);
+			int numMiners = numMiners(enemiesAround);
+			int currentNumMiners = rc.readBroadcast(NUM_MINERS_IN_POSITION);
+			if(numMiners>= currentNumMiners){
+				rc.broadcast(MINERS_TO_ATTACK_X, currentLocation.x);
+				rc.broadcast(MINERS_TO_ATTACK_Y, currentLocation.y);
+				rc.broadcast(NUM_MINERS_IN_POSITION, numMiners);
+			}
             if (enemyRobots.length>0 && rc.isWeaponReady()) {
                 attackLeastHealthEnemy(enemyRobots);
             }

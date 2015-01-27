@@ -35,6 +35,7 @@ public class TANKRobot extends BaseRobot {
             MapLocation currentLocation = rc.getLocation();
             RobotInfo[] nearbyAllies = rc.senseNearbyRobots(rc.getLocation(),GameConstants.SUPPLY_TRANSFER_RADIUS_SQUARED,rc.getTeam());
             double supplyLevel = rc.getSupplyLevel();
+            int numTanks = rc.readBroadcast(TANK_PREVIOUS_CHAN);
             if(rc.getSupplyLevel() > 0){
             	hasBeenSupplied = true;
             }
@@ -48,7 +49,7 @@ public class TANKRobot extends BaseRobot {
                     NavSystem.dumbNav(this.myHQ);
                 }
             }
-            if (Clock.getRoundNum() < (rc.getRoundLimit()*.8-100)) {
+            if (Clock.getRoundNum() < (rc.getRoundLimit()*.8-100)  ) {
                 if (rc.isCoreReady()) {
                     if (supplyLevel < 50 && currentLocation.distanceSquaredTo(this.myHQ)<30) {
                         NavSystem.dumbNav(this.myHQ);
@@ -57,7 +58,7 @@ public class TANKRobot extends BaseRobot {
                        // RobotInfo[] neighbors = rc.senseNearbyRobots(rc.getLocation(),1,rc.getTeam());
                         //System.out.println(neighbors.length);
                         //int numTanks = numTanksSurrounding(rc,neighbors);
-                        double radiusOfTanks = rc.readBroadcast(TANK_PREVIOUS_CHAN)/Math.PI;
+                        double radiusOfTanks = numTanks/Math.PI;
                         for(MapLocation towerLoc : rc.senseEnemyTowerLocations()){
                         	Direction directionTowardsTower = targetToProtect.directionTo(towerLoc);
                         	MapLocation furthestTank = targetToProtect.add(directionTowardsTower, (int) Math.sqrt(radiusOfTanks));
