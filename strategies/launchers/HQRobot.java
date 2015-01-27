@@ -1,4 +1,4 @@
-package final_strategy;
+package launchers;
 
 
 import battlecode.common.Clock;
@@ -30,12 +30,32 @@ public class HQRobot extends BaseRobot {
 	@Override
 	public void run() {
 		try {
+			
+//			if(Clock.getBytecodeNum() < 900){
+//				transferSupplies(rc);
+//			} else{
+//				transferSpecificSupplies(RobotType.DRONE,rc);
+//			}
+			if(Clock.getRoundNum() ==1){
+				rc.broadcast(SUPPLIER_START_QUEUE_CHAN, 104);
+				rc.broadcast(SUPPLIER_END_QUEUE_CHAN, 104);
+				rc.broadcast(SUPPLIER_ID_CHAN, 0);
+				rc.broadcast(SUPPLIER_NEEDED, 0);
+				rc.broadcast(COMMANDER_START_QUEUE_CHAN, 203);
+				rc.broadcast(COMMANDER_END_QUEUE_CHAN, 203);
+//				rc.broadcast(104, 0);
+//				rc.broadcast(105,0);
+			}
+//			System.out.println("start channel " + rc.readBroadcast(SUPPLIER_START_QUEUE_CHAN));
+//			System.out.println("end channel " + rc.readBroadcast(SUPPLIER_END_QUEUE_CHAN));
+			//hqTransferSupplies(rc);
 			hqTransferAllSuppliesForRestOfGame(rc);
 			
-			rc.broadcast(200, 0);
-			
-			int beaversBuilt = rc.readBroadcast(39);
-			
+			if(Clock.getRoundNum() % 10 ==0){
+				rc.broadcast(LAUNCHERS_ATTACK, 1);
+			}else {
+				rc.broadcast(LAUNCHERS_ATTACK, 0);
+			}
 			
 		    int numMinerFactories = rc.readBroadcast(MINER_FACT_CURRENT_CHAN);
 		    rc.broadcast(MINER_FACT_CURRENT_CHAN, 0);
@@ -53,8 +73,14 @@ public class HQRobot extends BaseRobot {
             rc.broadcast(SUPPLY_DEPOT_CURRENT_CHAN, 0);
             int numTanks = rc.readBroadcast(TANK_CURRENT_CHAN);
             rc.broadcast(TANK_CURRENT_CHAN, 0);
+            int numTechInsts = rc.readBroadcast(TECH_INST_CURRENT_CHAN);
+            rc.broadcast(TECH_INST_CURRENT_CHAN, 0);
+            int numTrainFields = rc.readBroadcast(TRAIN_CURRENT_CHAN);
+            rc.broadcast(TRAIN_CURRENT_CHAN, 0);
             int numSoldiers = rc.readBroadcast(SOLDIER_CURRENT_CHAN);
             rc.broadcast(SOLDIER_CURRENT_CHAN, 0);
+            int numLaunchers = rc.readBroadcast(LAUNCHER_CURRENT_CHAN);
+            rc.broadcast(LAUNCHER_CURRENT_CHAN, 0);
             
             rc.broadcast(MINER_FACT_PREVIOUS_CHAN, numMinerFactories);
             rc.broadcast(MINER_PREVIOUS_CHAN, numMiners);
@@ -64,18 +90,17 @@ public class HQRobot extends BaseRobot {
             rc.broadcast(SUPPLIER_DRONES_PREVIOUS_CHAN, numSupplierDrones);
             rc.broadcast(SUPPLY_DEPOT_PREVIOUS_CHAN, numSupplyDepots);
             rc.broadcast(TANK_PREVIOUS_CHAN, numTanks);
+            rc.broadcast(TECH_INST_PREVIOUS_CHAN, numTechInsts );
+            rc.broadcast(TRAIN_PREVIOUS_CHAN, numTrainFields);
             rc.broadcast(SOLDIER_PREVIOUS_CHAN, numSoldiers);
+            rc.broadcast(LAUNCHER_PREVIOUS_CHAN, numLaunchers);
+
             
             RobotInfo[] enemies = getEnemiesInAttackingRange(RobotType.HQ);
             if(enemies.length>0 && rc.isWeaponReady()){
             	attackLeastHealthEnemy(enemies);
-            } else if (rc.isCoreReady() && rc.hasSpawnRequirements(RobotType.BEAVER) && (beaversBuilt<5 || rc.readBroadcast(BEAVER_PREVIOUS_CHAN)<2)) {
-                Direction newDir =  getSpawnDirection(RobotType.BEAVER);
-                if (newDir != null) {
-                    rc.spawn(newDir, RobotType.BEAVER);
-                    rc.broadcast(39, beaversBuilt+1);
-                }
-
+            } else if (rc.isCoreReady() && ((rc.readBroadcast(40) > 0 && rc.hasSpawnRequirements(RobotType.BEAVER) && rc.readBroadcast(BEAVER_PREVIOUS_CHAN)<5 && rc.readBroadcast(MINER_PREVIOUS_CHAN)>2)  || rc.readBroadcast(BEAVER_PREVIOUS_CHAN)==0)) {
+                RobotPlayer.trySpawn(RobotPlayer.directions[RobotPlayer.rand.nextInt(8)], RobotType.BEAVER);
             }
 
 		} catch (Exception e) {

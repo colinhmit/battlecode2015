@@ -35,7 +35,6 @@ public class BEAVERRobot extends BaseRobot {
 		    boolean building = false;
 			if(rc.isCoreReady()){
 				double ore = rc.getTeamOre();
-//				int minerFactories = rc.readBroadcast(MINER_FACT_PREVIOUS_CHAN);
 				int minerFactoriesBuilt = rc.readBroadcast(40);
 				int barracksBuilt = rc.readBroadcast(41);
 				int tankFactoriesBuilt = rc.readBroadcast(42);
@@ -50,38 +49,27 @@ public class BEAVERRobot extends BaseRobot {
 	                    attackLeastHealthEnemy(enemyRobots);
 	                }
 			    } else if (rc.hasBuildRequirements(RobotType.MINERFACTORY) && minerFactoriesBuilt <2) {
-			        System.out.println(building);
                     Direction buildDirection = getBuildDirectionCheckerBoard(RobotType.MINERFACTORY);
                     if (buildDirection!=null) {
                         rc.build(buildDirection, RobotType.MINERFACTORY);
                         rc.broadcast(40, minerFactoriesBuilt+1);
                         building=true;
                     }			   
-                    System.out.println(building);
-			    } else if (rc.hasBuildRequirements(RobotType.HELIPAD) && helipadsBuilt < 1) {
-			        System.out.println(building);
-                    Direction buildDirection = getBuildDirectionCheckerBoard(RobotType.HELIPAD);
-                    if (buildDirection!=null) {
-                        rc.build(buildDirection, RobotType.HELIPAD);
-                        rc.broadcast(43, helipadsBuilt+1);
-                        building=true;
-                    }
-                    System.out.println(building);
-			    } else if (rc.hasBuildRequirements(RobotType.SUPPLYDEPOT) && supplyDepotsBuilt < 2) {
+			    } else if (rc.hasBuildRequirements(RobotType.SUPPLYDEPOT) && supplyDepotsBuilt < 2 || ore>2000 && supplyDepotsBuilt < 5 || ore>2500 && supplyDepotsBuilt<7) {
                     Direction buildDirection = getBuildDirectionCheckerBoard(RobotType.SUPPLYDEPOT);
                     if (buildDirection!=null) {
                         rc.build(buildDirection, RobotType.SUPPLYDEPOT);
                         rc.broadcast(44, supplyDepotsBuilt+1);
                         building=true;
                     }     			        
-			    } else if (rc.hasBuildRequirements(RobotType.BARRACKS) && barracksBuilt < 1) {
+			    } else if (rc.hasBuildRequirements(RobotType.BARRACKS) && barracksBuilt < 1 && minerFactoriesBuilt>0) {
                     Direction buildDirection = getBuildDirectionCheckerBoard(RobotType.BARRACKS);
                     if (buildDirection!=null) {
                         rc.build(buildDirection, RobotType.BARRACKS);
                         rc.broadcast(41, barracksBuilt+1);
                         building=true;
                     }       
-			    } else if (rc.hasBuildRequirements(RobotType.TANKFACTORY) && tankFactoriesBuilt < 4) {
+			    } else if (rc.hasBuildRequirements(RobotType.TANKFACTORY) && tankFactoriesBuilt < 4 || ore>2000 && tankFactoriesBuilt < 5 || ore>2500 && tankFactoriesBuilt<6) {
 			        Direction buildDirection = getBuildDirectionCheckerBoard(RobotType.TANKFACTORY);
 			        if (buildDirection != null) {
 			            rc.build(buildDirection, RobotType.TANKFACTORY);
@@ -89,15 +77,15 @@ public class BEAVERRobot extends BaseRobot {
 			            building=true;
 			        }
 			    } 
-			    if (!building) {
-			        
-			        System.out.println("I'm here!!!");
-	                if(rc.senseOre(rc.getLocation())>5){
+			    if (!building) {		        
+	                if(rc.senseOre(rc.getLocation())>3){
 	                    rc.mine();
-	                } else if(rc.getLocation().distanceSquaredTo(rc.senseHQLocation())> 22){
-	                    RobotPlayer.tryMove(rc.getLocation().directionTo(rc.senseHQLocation()));
+	                } else if(rc.getLocation().distanceSquaredTo(rc.senseHQLocation())> 18){
+	                    Direction moveDir = getMoveDir(this.myHQ);
+	                    if (moveDir!=null) {
+	                        rc.move(moveDir);
+	                    }
 	                } else{
-	                    System.out.println("inside move randomly");
 	                    moveRandomly();
 	                }			        
 			    }

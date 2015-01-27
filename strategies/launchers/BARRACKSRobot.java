@@ -1,4 +1,4 @@
-package final_strategy;
+package launchers;
 
 import battlecode.common.Clock;
 import battlecode.common.Direction;
@@ -20,7 +20,7 @@ public class BARRACKSRobot extends BaseRobot {
 	@Override
 	public void run() {
 		try {
-			if (rc.hasSpawnRequirements(RobotType.SOLDIER) && Clock.getRoundNum() < 1500 && rc.readBroadcast(SOLDIER_PREVIOUS_CHAN)<20) {
+			if (rc.hasSpawnRequirements(RobotType.SOLDIER) && Clock.getRoundNum() < 700 && rc.readBroadcast(SOLDIER_PREVIOUS_CHAN)<20) {
                 Direction newDir =  getSpawnDirection(RobotType.SOLDIER);
                 if (newDir != null) {
                     rc.spawn(newDir, RobotType.SOLDIER);

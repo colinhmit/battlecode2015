@@ -1,8 +1,6 @@
-package final_strategy;
+package launchers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 import battlecode.common.*;
 
@@ -35,9 +33,14 @@ public abstract class BaseRobot {
     public final static int SUPPLIER_ID_CHAN = 103;
     public final static int SUPPLIER_TWO_ID_CHAN = 99;
     
+    public final static int COMMANDER_START_QUEUE_CHAN = 200;
+    public final static int COMMANDER_END_QUEUE_CHAN = 201;
+    
     public final static int MINERS_TO_ATTACK_X = 50;
     public final static int MINERS_TO_ATTACK_Y = 51;
     public final static int NUM_MINERS_IN_POSITION = 52;
+    
+    public final static int LAUNCHERS_ATTACK = 53;
     
     public static int TESTCHANNEL = 2000;
     
@@ -68,7 +71,6 @@ public abstract class BaseRobot {
     public int startSupplierQueue;
     public int endSupplierQueue;
     public int supplierID;
-    Direction[] udlrDirections = {Direction.NORTH, Direction.EAST, Direction.WEST, Direction.SOUTH};
     //private static HashSet<MapLocation> enemyTerritory = new HashSet<MapLocation>();
     
 
@@ -90,17 +92,15 @@ public abstract class BaseRobot {
         Functions.init(this);
         
     }
-    
-    public double getOreDensity(MapLocation location) {
-        MapLocation[] surroundingLocations = MapLocation.getAllMapLocationsWithinRadiusSq(location, 5);
-        double oreDensity = 0;
-        for (MapLocation loc: surroundingLocations) {
-            oreDensity += rc.senseOre(loc);
-        }
-        return oreDensity;
+    public int numMiners(RobotInfo[] enemies){
+    	int miners = 0;
+    	for(RobotInfo enemy : enemies){
+    		if(enemy.type == RobotType.MINER){
+    			miners ++;
+    		}
+    	}
+    	return miners;
     }
-    
-    
     public MapLocation getOurClosestTowerToThem() {
         MapLocation[] ourTowers = rc.senseTowerLocations();
         int distanceToClosest = this.theirHQ.distanceSquaredTo(ourTowers[0]);
@@ -135,6 +135,123 @@ public abstract class BaseRobot {
 
     }
     
+    public MapLocation getFurthestTower() {
+    	MapLocation[] enemyTowers = rc.senseEnemyTowerLocations();
+    	if(enemyTowers.length == 0){
+    		return null;
+    	} else {
+    		int distanceToFurthest = rc.getLocation().distanceSquaredTo(enemyTowers[0]);
+    		MapLocation furthest = enemyTowers[0];
+    		for ( MapLocation tower : enemyTowers) {
+    			int distanceToTower = rc.getLocation().distanceSquaredTo(tower);
+    			if(distanceToTower > distanceToFurthest) {
+    				distanceToFurthest = distanceToTower;
+    				furthest = tower;
+    			}
+    		}
+    		return furthest;
+    	}
+    }
+    
+    public MapLocation[] getFurthestTowersFromEachOther() {
+    	MapLocation[] enemyTowers = rc.senseEnemyTowerLocations();
+    	MapLocation[] furthestTwo = new MapLocation[2];
+    	int largestDistance = 0;
+    	for(MapLocation loc : enemyTowers){
+    		for(MapLocation loc2 : enemyTowers){
+    			int distance = loc.distanceSquaredTo(loc2);
+    			if(distance > largestDistance){
+    				largestDistance = distance;
+    				furthestTwo[0] = loc;
+    				furthestTwo[1] = loc2;
+    			}
+    		}
+    	}
+    	return furthestTwo;
+    }
+    
+    public void move(Direction dirToMove, MapLocation location) throws GameActionException {
+    	
+    	if(dirToMove != null && senseNearbyTowers(location.add(dirToMove))==0 ){
+    		rc.move(dirToMove);
+    	}
+    }
+    public void moveLauncher(Direction dirToMove, MapLocation location) throws GameActionException {
+    	if(dirToMove != null && senseNearbyTowers(location.add(dirToMove))==0 && tankFreeLoc(rc.getLocation(),rc.senseNearbyRobots(24,myTeam),dirToMove) ){
+    		rc.move(dirToMove);
+    	}
+    }
+    public int senseNearbyTowers(MapLocation currentLocation, Direction direction) {
+        MapLocation[] enemyTowers = rc.senseEnemyTowerLocations();
+        MapLocation newLocation = currentLocation.add(direction);
+        int count = 0;
+        for (MapLocation tower : enemyTowers) {
+            if (newLocation.distanceSquaredTo(tower)<=24)
+                count += 1;
+        }
+        if (newLocation.distanceSquaredTo(this.theirHQ)<=24) {
+            count+=1;
+        }
+        return count;
+    }
+    
+    public int senseTowersClose(MapLocation location) {
+    	MapLocation[] enemyTowers = rc.senseEnemyTowerLocations();
+        int count = 0;
+
+        for (MapLocation tower : enemyTowers) {
+            if (location.distanceSquaredTo(tower)<=40)
+                count += 1;
+
+        }
+        if (location.distanceSquaredTo(this.theirHQ)<=40) {
+            count+=1;
+        }
+        return count;
+    }
+    
+    public boolean pathToFree(MapLocation location, RobotInfo[] allies, MapLocation locationAttacking) throws GameActionException{
+    	for(int i=2 ; i<=3; i++){
+    		MapLocation newLoc = location.add(location.directionTo(locationAttacking),i);
+//    		if(rc.isLocationOccupied(newLoc)){
+//    			return false;
+//    		}
+    		for(RobotInfo ally : allies){
+    			if(newLoc.distanceSquaredTo(ally.location)<=2){
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
+    }
+    
+    public static boolean tankFreeLoc(MapLocation location, RobotInfo[] allies, Direction toMove){
+    	MapLocation newLoc = location.add(toMove);
+    	for(RobotInfo ally : allies){
+    		if(ally.type == RobotType.TANK && newLoc.distanceSquaredTo(ally.location)<=16){
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+    
+    public int senseNearbyTowers(MapLocation location) {
+        MapLocation[] enemyTowers = rc.senseEnemyTowerLocations();
+        int count = 0;
+        MapLocation newLocation = location.add(location.directionTo(this.theirHQ));
+        MapLocation newLocation2 = location.add(location.directionTo(getClosestTower()));
+        for (MapLocation tower : enemyTowers) {
+            if (newLocation.distanceSquaredTo(tower)<=24)
+                count += 1;
+            if (newLocation2.distanceSquaredTo(tower)<=24)
+                count+= 1;
+        }
+        if (newLocation.distanceSquaredTo(this.theirHQ)<=24) {
+            count+=1;
+        }
+        return count;
+    } 
+    
     public static int senseNearbyTowersStat(MapLocation location) {
     	MapLocation[] enemyTowers = rc.senseEnemyTowerLocations();
         int count = 0;
@@ -152,42 +269,21 @@ public abstract class BaseRobot {
         return count;
     }
     
-    public int numMiners(RobotInfo[] enemies){
-    	int miners = 0;
+    public static boolean senseTanksAndLaunchersToAvoid(RobotInfo[] enemies, Direction dirToMove , MapLocation loc){
+    	//boolean safeToTraverse = false;
+    	MapLocation newLoc = loc.add(dirToMove);
     	for(RobotInfo enemy : enemies){
-    		if(enemy.type == RobotType.MINER){
-    			miners ++;
+    		if(enemy.type == RobotType.TANK || enemy.type == RobotType.LAUNCHER && enemy.location.distanceSquaredTo(newLoc)<=16){
+    			return false;
     		}
     	}
-    	return miners;
+    	return true;
     }
-    
-    public static void moveRandomly() throws GameActionException {
-        Direction[] directions = RobotPlayer.directions;
-        Collections.shuffle(Arrays.asList(directions));
-        for (Direction dir : directions) {
-            if (rc.canMove(dir))
-                rc.move(dir);
-        }
-    }
-    
 
     
-    public int senseNearbyTowers(MapLocation currentLocation, Direction direction) {
-        MapLocation[] enemyTowers = rc.senseEnemyTowerLocations();
-        MapLocation newLocation = currentLocation.add(direction);
-        int count = 0;
-        for (MapLocation tower : enemyTowers) {
-            if (newLocation.distanceSquaredTo(tower)<=24)
-                count += 1;
-        }
-        if (newLocation.distanceSquaredTo(this.theirHQ)<=24) {
-            count+=1;
-        }
-        return count;
+    public boolean withinRange(int unitCount1, int unitCount2, double idealValue, double threshold) {
+        return ((unitCount1*1.0/unitCount2-idealValue)<threshold);
     }
-    
-    
     
     public Direction[] getDirectionsAway(MapLocation awayFrom) {
         Direction away = rc.getLocation().directionTo(awayFrom).opposite();
@@ -206,7 +302,6 @@ public abstract class BaseRobot {
 
     public Direction getMoveDir(MapLocation dest) {
         Direction[] dirs = getDirectionsToward(dest);
-        Collections.shuffle(Arrays.asList(dirs));
         for (Direction d : dirs) {
             if (rc.canMove(d)) {
                 return d;
@@ -233,31 +328,6 @@ public abstract class BaseRobot {
             }
         }
         return null;
-    }
-    
-    public Direction getBuildDirectionCheckerBoard(RobotType type) throws GameActionException {
-        Direction[] dirs = RobotPlayer.directions;
-        for (Direction d : dirs) {
-            if (buildDirectionCheck(d) && rc.canBuild(d, RobotType.SUPPLYDEPOT)) {
-                return d;
-            }
-            
-        }
-        return null;
-    }
-    
-    public boolean buildDirectionCheck(Direction direction) throws GameActionException {
-        int count = 0;
-        for (Direction d : udlrDirections) {
-            MapLocation surroundingPosition = rc.getLocation().add(direction).add(d);
-            RobotInfo robotAtPosition = rc.senseRobotAtLocation(surroundingPosition);
-            if (robotAtPosition==null&& rc.senseTerrainTile(surroundingPosition).isTraversable()) {
-                count+=1;
-            } else if (robotAtPosition!=null && robotAtPosition.type.canMove()) {
-                count+=1;
-            }
-        }
-        return (count>=3);
     }
 
     public RobotInfo[] getAllies() {
@@ -288,32 +358,6 @@ public abstract class BaseRobot {
             if (info.health < minEnergon) {
                 toAttack = info.location;
                 minEnergon = info.health;
-            }
-        }
-
-        rc.attackLocation(toAttack);
-    }
-    
-    public void attackLeastHealthEnemyTanks(RobotInfo[] enemies) throws GameActionException {
-        if (enemies.length==0) {
-            return;
-        }
-        double minHealth = Double.MAX_VALUE;
-        MapLocation toAttack = null;
-        for (RobotInfo info : enemies) {
-            if(info.type == RobotType.TOWER){
-                rc.attackLocation(info.location);
-                return;
-            } else if(info.type == RobotType.HQ){
-                rc.attackLocation(info.location);
-                return;
-            } else if (info.type==RobotType.LAUNCHER) {
-                rc.attackLocation(info.location);
-                return;
-            }
-            if (info.health < minHealth) {
-                toAttack = info.location;
-                minHealth = info.health;
             }
         }
 
@@ -402,8 +446,8 @@ public abstract class BaseRobot {
     	RobotInfo[] nearbyAllies = rc.senseNearbyRobots(rc.getLocation(),GameConstants.SUPPLY_TRANSFER_RADIUS_SQUARED,rc.getTeam());
     	for(RobotInfo ri : nearbyAllies){
     		double transferAmount = 0;
-    		if(Clock.getRoundNum() > 1000 && ri.type== RobotType.TANK){
-//    			if(ri.type== RobotType.TANK){
+    		if(Clock.getRoundNum() > 1000){
+    			if(ri.type== RobotType.TANK){
     				transferAmount = (2000 - Clock.getRoundNum())*45;
     				if( rc.getSupplyLevel() < transferAmount){
     					transferAmount = Math.min((rc.getSupplyLevel()-ri.supplyLevel)/2, 2500);
@@ -411,7 +455,20 @@ public abstract class BaseRobot {
     				//transferAmount = (rc.getSupplyLevel()-ri.supplyLevel)/2;
     				rc.transferSupplies((int)transferAmount, ri.location);
     				
-//    			}
+    			} else if(ri.type == RobotType.COMMANDER){
+    				transferAmount = (2000 - Clock.getRoundNum())*15;
+	    			if(rc.getSupplyLevel() < transferAmount){
+	    				transferAmount = Math.min((rc.getSupplyLevel()-ri.supplyLevel)/2, 1500);
+	    			}
+	    			rc.transferSupplies((int)transferAmount, ri.location);
+    			} else if(ri.type == RobotType.LAUNCHER){
+    				transferAmount = (2000 - Clock.getRoundNum())*45;
+    				if( rc.getSupplyLevel() < transferAmount){
+    					transferAmount = Math.min((rc.getSupplyLevel()-ri.supplyLevel)/2, 2500);
+    				}
+    				//transferAmount = (rc.getSupplyLevel()-ri.supplyLevel)/2;
+    				rc.transferSupplies((int)transferAmount, ri.location);
+    			}
     		} else {
 	    		if(ri.type == RobotType.BEAVER && Clock.getRoundNum() < 1000){
 	    			if(ri.supplyLevel < 10){
@@ -438,12 +495,25 @@ public abstract class BaseRobot {
 	    				transferAmount = Math.min((rc.getSupplyLevel()-ri.supplyLevel)/2, 1500);
 	    			}
 	    			rc.transferSupplies((int)transferAmount, ri.location);
+	    		} else if(ri.type == RobotType.COMMANDER){
+	    			transferAmount = (2000 - Clock.getRoundNum())*15;
+	    			if(rc.getSupplyLevel() < transferAmount){
+	    				transferAmount = Math.min((rc.getSupplyLevel()-ri.supplyLevel)/2, 1500);
+	    			}
+	    			rc.transferSupplies((int)transferAmount, ri.location);
 	    		} else if(ri.type == RobotType.SOLDIER){
 	    			transferAmount = (2000 - Clock.getRoundNum())*5;
 	    			if(rc.getSupplyLevel() < transferAmount){
 	    				transferAmount = Math.min((rc.getSupplyLevel()-ri.supplyLevel)/2, 1500);
 	    			}
 	    			rc.transferSupplies((int)transferAmount, ri.location);
+	    		} else if(ri.type == RobotType.LAUNCHER){
+	    			transferAmount = (2000 - Clock.getRoundNum())*25;
+    				if( rc.getSupplyLevel() < transferAmount){
+    					transferAmount = Math.min((rc.getSupplyLevel()-ri.supplyLevel)/2, 2500);
+    				}
+    				//transferAmount = (rc.getSupplyLevel()-ri.supplyLevel)/2;
+    				rc.transferSupplies((int)transferAmount, ri.location);
 	    		}
     		}
     	}

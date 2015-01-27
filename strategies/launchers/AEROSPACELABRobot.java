@@ -1,4 +1,4 @@
-package final_strategy;
+package launchers;
 
 import battlecode.common.Clock;
 import battlecode.common.Direction;
@@ -8,22 +8,22 @@ import battlecode.common.RobotController;
 import battlecode.common.RobotType;
 import battlecode.common.Team;
 
-public class BARRACKSRobot extends BaseRobot {
+public class AEROSPACELABRobot extends BaseRobot {
 
 
 
 
-	public BARRACKSRobot(RobotController rc) throws GameActionException {
+	public AEROSPACELABRobot(RobotController rc) throws GameActionException {
 		super(rc);
 	}
 
 	@Override
 	public void run() {
 		try {
-			if (rc.hasSpawnRequirements(RobotType.SOLDIER) && Clock.getRoundNum() < 1500 && rc.readBroadcast(SOLDIER_PREVIOUS_CHAN)<20) {
-                Direction newDir =  getSpawnDirection(RobotType.SOLDIER);
+			if (rc.hasSpawnRequirements(RobotType.LAUNCHER)) {
+                Direction newDir =  getSpawnDirection(RobotType.LAUNCHER);
                 if (newDir != null) {
-                    rc.spawn(newDir, RobotType.SOLDIER);
+                    rc.spawn(newDir, RobotType.LAUNCHER);
                 }
             }
 

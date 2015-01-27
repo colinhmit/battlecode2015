@@ -1,11 +1,10 @@
-package final_strategy;
+package launchers;
 
 import java.util.Random;
 
 import battlecode.common.Clock;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
-import battlecode.common.GameConstants;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
@@ -27,7 +26,6 @@ public class SOLDIERRobot extends BaseRobot {
 	public int towerNum;
 	public static Random random = new Random();
 	public MapLocation[] towers;
-	public MapLocation target;
 
 
 	public SOLDIERRobot(RobotController rc) throws GameActionException {
@@ -47,12 +45,7 @@ public class SOLDIERRobot extends BaseRobot {
 //		directionOfMiners = null;
 //		locationOfMiners = null;
 		towers = rc.senseEnemyTowerLocations();
-		towerNum = (rc.readBroadcast(SOLDIERS_MADE)) % (towers.length+1);
-		if(towerNum == towers.length){
-			target = DataCache.enemyHQ;
-		}else{
-			target = towers[towerNum];
-		}
+		towerNum = (rc.readBroadcast(SOLDIERS_MADE)) % towers.length;
 		rc.broadcast(SOLDIERS_MADE, rc.readBroadcast(SOLDIERS_MADE)+1);
 	}
 
@@ -62,7 +55,7 @@ public class SOLDIERRobot extends BaseRobot {
 			DataCache.updateRoundVariables();
 			MapLocation location = rc.getLocation();
 			RobotInfo[] enemiesAround = rc.senseNearbyRobots(24,theirTeam);
-
+			rc.setIndicatorString(1,new Integer(enemiesAround.length).toString());
 			RobotInfo[] enemiesToAttack = rc.senseNearbyRobots(RobotType.SOLDIER.attackRadiusSquared, theirTeam);
 
 //			int numMiners = numMiners(enemiesAround);
@@ -79,10 +72,8 @@ public class SOLDIERRobot extends BaseRobot {
 //				rc.broadcast(NUM_MINERS_IN_POSITION, numMiners);
 //			}
 			if(rc.getSupplyLevel() < 45 && enemiesAround.length == 0 && enemiesToAttack.length == 0){
-//				Direction dirToMove = NavSystem.dumbNav(myHQ);
-//				move(dirToMove,location);
-				NavSystem.dumbNav(myHQ);
-				
+				Direction dirToMove = NavSystem.dumbNav(myHQ);
+				move(dirToMove,location);
 			}
 			else if(enemiesToAttack.length == 0){
 				if(minerLoc.equals(location)){
@@ -91,16 +82,15 @@ public class SOLDIERRobot extends BaseRobot {
 				if(enemiesAround.length==0){
 					if(currentNumMiners != 0){
 						
-//						Direction dirToMove = NavSystem.dumbNav(minerLoc);
-//						move(dirToMove,location);
-						NavSystem.dumbNav(minerLoc);
+						Direction dirToMove = NavSystem.dumbNav(minerLoc);
+						move(dirToMove,location);
+						rc.setIndicatorString(1,"moving towards miners");
 						
 					} else{
 
-//						Direction dirToMove = NavSystem.dumbNav(towers[towerNum]);
-//						move(dirToMove,location);
-						
-						NavSystem.dumbNav(target);
+						Direction dirToMove = NavSystem.dumbNav(towers[towerNum]);
+						move(dirToMove,location);
+						rc.setIndicatorString(1, "moving towards tower");
 					}
 				} else {
 					boolean tanksOrLaunchers = false;
@@ -108,6 +98,7 @@ public class SOLDIERRobot extends BaseRobot {
 					RobotInfo robotToMoveTowards = enemiesAround[0];
 					int distanceToRobot = location.distanceSquaredTo(robotToMoveTowards.location);
 					int numMiners =  0;
+					rc.setIndicatorString(0,"bytecode before " + Clock.getBytecodesLeft());
 					for(RobotInfo ri: enemiesAround){
 						RobotType type = ri.type;
 						if(type == RobotType.TANK || type == RobotType.LAUNCHER){
@@ -139,12 +130,12 @@ public class SOLDIERRobot extends BaseRobot {
 					}
 
 					if(tanksOrLaunchers){
+						rc.setIndicatorString(0,"avoiding tank or launcher first else if");
 //						MapLocation locMovingTo = location.add(robotToAvoid.location.directionTo(location));
-//						Direction dirToMove = NavSystem.dumbNav(location.add(robotToAvoid.location.directionTo(location)));
-////						if(rc.isCoreReady()){
-//							move(dirToMove, location);
+						Direction dirToMove = NavSystem.dumbNav(location.add(robotToAvoid.location.directionTo(location)));
+//						if(rc.isCoreReady()){
+							move(dirToMove, location);
 //						}
-						NavSystem.dumbNav(location.add(robotToAvoid.location.directionTo(location)));
 
 					} else{
 						//rc.setIndicatorString(0, "not avoiding tank first else if");
@@ -175,9 +166,8 @@ public class SOLDIERRobot extends BaseRobot {
 							rc.broadcast(MINERS_TO_ATTACK_Y, location.y);
 							rc.broadcast(NUM_MINERS_IN_POSITION, numMiners);
 						}
-//						Direction dirToMove = NavSystem.dumbNav(robotToMoveTowards.location);
-//						move(dirToMove, location);
-						NavSystem.dumbNav(robotToMoveTowards.location);
+						Direction dirToMove = NavSystem.dumbNav(robotToMoveTowards.location);
+						move(dirToMove, location);
 						//rc.setIndicatorString(1,"bytecode after " + Clock.getBytecodesLeft());
 					}
 				}
@@ -221,14 +211,14 @@ public class SOLDIERRobot extends BaseRobot {
 					
 				}
 				if(tanksOrLaunchers){
-//					Direction dirToMove = NavSystem.dumbNav(location.add(robotToAvoid.location.directionTo(location)));
-//					if(rc.isCoreReady()){
-//						move(dirToMove, location);
-//					}
-					NavSystem.dumbNav(location.add(robotToAvoid.location.directionTo(location)));
+					rc.setIndicatorString(0,"avoiding tank or launcher second else if");
+					Direction dirToMove = NavSystem.dumbNav(location.add(robotToAvoid.location.directionTo(location)));
+					if(rc.isCoreReady()){
+						move(dirToMove, location);
+					}
 
 				} else {
-
+					rc.setIndicatorString(0,"not avoiding tank second else if");
 //					boolean inAttackingRangeOfRob = false;
 //					RobotInfo robToAvoid = null;
 //					RobotInfo leastHealth = enemiesToAttack[0];
@@ -251,10 +241,9 @@ public class SOLDIERRobot extends BaseRobot {
 //
 //					}
 					if(inAttackingRangeOfRob){
-//						Direction dirToMove = NavSystem.dumbNav(location.add(robInAttackRangeToAvoid.location.directionTo(location)));
+						Direction dirToMove = NavSystem.dumbNav(location.add(robInAttackRangeToAvoid.location.directionTo(location)));
 						if(rc.isCoreReady()){
-//							move(dirToMove, location);
-							NavSystem.dumbNav(location.add(robInAttackRangeToAvoid.location.directionTo(location)));
+							move(dirToMove, location);
 						} else if(rc.isWeaponReady()) {
 							rc.attackLocation(leastHealth.location);
 						}
@@ -268,10 +257,9 @@ public class SOLDIERRobot extends BaseRobot {
 					}
 				}
 			}
-			RobotInfo[] nearbyAllies = rc.senseNearbyRobots(GameConstants.SUPPLY_TRANSFER_RADIUS_SQUARED,myTeam);
-			
-			transferSpecificSupplies(RobotType.SOLDIER, rc, nearbyAllies);
-			rc.broadcast(SOLDIER_CURRENT_CHAN, rc.readBroadcast(SOLDIER_CURRENT_CHAN)+1);
+//			RobotInfo[] nearbyAllies = rc.senseNearbyRobots(24,myTeam);
+//			transferSpecificSupplies(RobotType.SOLDIER, rc, nearbyAllies);
+			rc.broadcast(SOLDIER_CURRENT_CHAN, SOLDIER_CURRENT_CHAN+1);
 
 		} catch (Exception e) {
 			//                    System.out.println("caught exception before it killed us:");

@@ -1,4 +1,4 @@
-package final_strategy;
+package launchers;
 
 import battlecode.common.*;
 import java.util.*;
@@ -37,13 +37,13 @@ public class NavSystem {
     ///////////////////////////////////////////////////////////////////////////
     //Snail Navigation
     ///////////////////////////////////////////////////////////////////////////
-    public static void dumbNav(MapLocation loc) throws GameActionException{
-        snailNav(DataCache.currentLoc.directionTo(loc));
+    public static Direction dumbNav(MapLocation loc) throws GameActionException{
+        return snailNav(DataCache.currentLoc.directionTo(loc));
     }
 
 
-    public static void snailNav(Direction chosenDirection) throws GameActionException{
-        tryToMove(chosenDirection, true, rc, directionalLooks, allDirections);
+    public static Direction snailNav(Direction chosenDirection) throws GameActionException{
+        return tryToMove(chosenDirection, true, rc, directionalLooks, allDirections);
     }
 
     static ArrayList<MapLocation> snailTrail = new ArrayList<MapLocation>();
@@ -67,7 +67,7 @@ public class NavSystem {
         return rc.canMove(dir);
     }
 
-    private static void tryToMove(Direction chosenDirection,boolean selfAvoiding,RobotController rc, int[] directionalLooks, Direction[] allDirections) throws GameActionException{
+    private static Direction tryToMove(Direction chosenDirection,boolean selfAvoiding,RobotController rc, int[] directionalLooks, Direction[] allDirections) throws GameActionException{
         while(snailTrail.size()<2)
             snailTrail.add(new MapLocation(-1,-1));
         if(rc.isCoreReady()){
@@ -78,26 +78,32 @@ public class NavSystem {
                 //rc.setIndicatorString(2, "notmoving in a direction");
                 int forwardInt = chosenDirection.ordinal();
                 Direction trialDir = allDirections[(forwardInt+directionalOffset+8)%8];
-                if(rc.getType() == RobotType.SOLDIER){
-                	if(canMove(trialDir,selfAvoiding,rc) && BaseRobot.senseNearbyTowersStat(rc.getLocation().add(trialDir))==0){
-                		rc.move(trialDir);
-                		break;
+                if(rc.getType() == RobotType.SOLDIER  ){
+                	if( canMove(trialDir,selfAvoiding,rc) && BaseRobot.senseNearbyTowersStat(rc.getLocation().add(trialDir))==0){
+                		return trialDir;
+                	}
+                }
+                else if(rc.getType()== RobotType.LAUNCHER){
+                	if(canMove(trialDir,selfAvoiding,rc) && BaseRobot.senseNearbyTowersStat(rc.getLocation().add(trialDir))==0 ){
+                		return trialDir;
                 	}
                 }
                 else if(canMove(trialDir,selfAvoiding,rc)){
                     //rc.setIndicatorString(0, "moving in" + trialDir);
                     //rc.setIndicatorString(2, String.valueOf(rc.canMove(trialDir)));
                     //
-                    rc.move(trialDir);
+                	return trialDir;
+                    //rc.move(trialDir);
                     //snailTrail.remove(0);
                     //snailTrail.add(rc.getLocation());
-                    break;
+                    //break;
                 }
 
                 //rc.setIndicatorString(2, String.valueOf(rc.canMove(trialDir)));
             }
             //System.out.println("I am at "+rc.getLocation()+", trail "+snailTrail.get(0)+snailTrail.get(1)+snailTrail.get(2));
         }
+        return null;
     }
 
     ///////////////////////////////////////////////////////////////////////////
