@@ -95,17 +95,6 @@ public abstract class BaseRobot {
         return oreDensity;
     }
     
-//    public MapLocation getBestOreLocation(MapLocation location) {
-//        MapLocation[] surroundingLocations = MapLocation.getAllMapLocationsWithinRadiusSq(location, 15);
-//        Collections.shuffle(Arrays.asList(surroundingLocations));
-//        MapLocation moveLocation = surroundingLocations[0];
-//        for (MapLocation loc: surroundingLocations) {
-//            if (rc.senseOre(loc)>4) {
-//                moveLocation = loc;
-//            }
-//        }
-//        return moveLocation;
-//    }
     
     public MapLocation getOurClosestTowerToThem() {
         MapLocation[] ourTowers = rc.senseTowerLocations();

@@ -28,6 +28,7 @@ public class TANKRobot extends BaseRobot {
 	public void run() {
 		try {
 		    DataCache.updateRoundVariables();
+		    RobotInfo[] senseAbleRobots = rc.senseNearbyRobots(24, this.theirTeam);
             RobotInfo[] enemyRobots = getEnemiesInAttackingRange(RobotType.TANK);
             MapLocation currentLocation = rc.getLocation();
             RobotInfo[] nearbyAllies = rc.senseNearbyRobots(rc.getLocation(),GameConstants.SUPPLY_TRANSFER_RADIUS_SQUARED,rc.getTeam());
@@ -36,6 +37,13 @@ public class TANKRobot extends BaseRobot {
             	hasBeenSupplied = true;
             }
             if (enemyRobots.length>0) {
+//                if (enemyRobots[0].type==RobotType.LAUNCHER) {
+//                    Direction directionTo = rc.getLocation().directionTo(enemyRobots[0].location);
+//                    rc.move(directionTo);
+//                } else if (enemyRobots[0].type==RobotType.MISSILE) {
+//                    Direction directionTo = rc.getLocation().directionTo(enemyRobots[0].location);
+//                    rc.move(directionTo);
+//                }
                 if (rc.isWeaponReady()) {
                     attackLeastHealthEnemyTanks(enemyRobots);
                 }

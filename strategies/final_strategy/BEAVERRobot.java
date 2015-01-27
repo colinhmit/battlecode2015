@@ -35,7 +35,6 @@ public class BEAVERRobot extends BaseRobot {
 		    boolean building = false;
 			if(rc.isCoreReady()){
 				double ore = rc.getTeamOre();
-//				int minerFactories = rc.readBroadcast(MINER_FACT_PREVIOUS_CHAN);
 				int minerFactoriesBuilt = rc.readBroadcast(40);
 				int barracksBuilt = rc.readBroadcast(41);
 				int tankFactoriesBuilt = rc.readBroadcast(42);
@@ -77,7 +76,7 @@ public class BEAVERRobot extends BaseRobot {
                         rc.broadcast(41, barracksBuilt+1);
                         building=true;
                     }       
-			    } else if (rc.hasBuildRequirements(RobotType.TANKFACTORY) && tankFactoriesBuilt < 4 || ore>2000 && tankFactoriesBuilt < 5) {
+			    } else if (rc.hasBuildRequirements(RobotType.TANKFACTORY) && tankFactoriesBuilt < 4 || ore>2000 && tankFactoriesBuilt < 5 || ore>2500 && tankFactoriesBuilt<6) {
 			        Direction buildDirection = getBuildDirectionCheckerBoard(RobotType.TANKFACTORY);
 			        if (buildDirection != null) {
 			            rc.build(buildDirection, RobotType.TANKFACTORY);
