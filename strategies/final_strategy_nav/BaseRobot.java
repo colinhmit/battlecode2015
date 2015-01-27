@@ -430,8 +430,8 @@ public abstract class BaseRobot {
     	RobotInfo[] nearbyAllies = rc.senseNearbyRobots(rc.getLocation(),GameConstants.SUPPLY_TRANSFER_RADIUS_SQUARED,rc.getTeam());
     	for(RobotInfo ri : nearbyAllies){
     		double transferAmount = 0;
-    		if(Clock.getRoundNum() > 1000){
-    			if(ri.type== RobotType.TANK){
+    		if(Clock.getRoundNum() > 1000 && ri.type == RobotType.TANK){
+//    			if(ri.type== RobotType.TANK){
     				transferAmount = (2000 - Clock.getRoundNum())*45;
     				if( rc.getSupplyLevel() < transferAmount){
     					transferAmount = Math.min((rc.getSupplyLevel()-ri.supplyLevel)/2, 2500);
@@ -439,7 +439,7 @@ public abstract class BaseRobot {
     				//transferAmount = (rc.getSupplyLevel()-ri.supplyLevel)/2;
     				rc.transferSupplies((int)transferAmount, ri.location);
     				
-    			}
+//    			}
     		} else {
 	    		if(ri.type == RobotType.BEAVER && Clock.getRoundNum() < 1000){
 	    			if(ri.supplyLevel < 10){
