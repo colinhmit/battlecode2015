@@ -48,6 +48,28 @@ public class TANKRobot extends BaseRobot {
 //                    Direction directionTo = rc.getLocation().directionTo(enemyRobots[0].location);
 //                    rc.move(directionTo);
 //                }
+            	for(RobotInfo enemy : senseAbleRobots){
+	        		if(enemy.type == RobotType.LAUNCHER){
+//	        			NavSystem.smartNav(enemy.location, false);
+	        			MapLocation enemyLoc = enemy.location;
+//	        			Direction dirTo = currentLocation.directionTo(enemyLoc);
+//	        			if(rc.isCoreReady() && !currentLocation.add(dirTo).equals(enemyLoc)){
+//	        				rc.move(dirTo);
+//	        			}
+	        			NavSystem.dumbNav(enemyLoc);
+	        			break;
+	        		} else if(enemy.type == RobotType.MISSILE){
+//	        			NavSystem.smartNav(enemy.location, false);
+	        			MapLocation enemyLoc = enemy.location;
+//	        			Direction dirTo = currentLocation.directionTo(enemyLoc);
+//	        			if(rc.isCoreReady() && !currentLocation.add(dirTo).equals(enemyLoc)){
+//	        				rc.move(dirTo);
+//	        			}
+	        			NavSystem.dumbNav(enemyLoc);
+	        			break;
+	        		}
+            	}
+        
                 if (rc.isWeaponReady()) {
                     attackLeastHealthEnemyTanks(enemyRobots);
                 }
@@ -76,7 +98,7 @@ public class TANKRobot extends BaseRobot {
                         		int changeInTarget = (int)Math.sqrt(difference);
                         		Direction dirFromTowerToLoc = towerLoc.directionTo(targetToProtect);
                         		targetToProtect = targetToProtect.add(dirFromTowerToLoc,changeInTarget);
-                        		System.out.println("changing target");
+
                         	}
                         }
 //                        if(currentLocation.distanceSquaredTo(ourClosest) > radiusOfTanks || rc.canMove(currentLocation.directionTo(ourClosest)) ) {
