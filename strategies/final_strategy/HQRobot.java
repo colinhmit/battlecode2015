@@ -13,8 +13,6 @@ import battlecode.common.Team;
 public class HQRobot extends BaseRobot {
 
 
-
-
 	public HQRobot(RobotController rc) throws GameActionException {
 		super(rc);
 

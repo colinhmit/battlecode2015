@@ -134,6 +134,19 @@ public abstract class BaseRobot {
         }
 
     }
+
+    public static int safeToMoveTo(MapLocation location) {
+        MapLocation[] enemyTowers = rc.senseEnemyTowerLocations();
+        int count = 0;
+        for (MapLocation tower : enemyTowers) {
+            if (location.distanceSquaredTo(tower)<=24)
+                count += 1;
+        }
+        if (location.distanceSquaredTo(rc.senseEnemyHQLocation())<=24) {
+            count+=1;
+        }
+        return count;
+    }
     
     public static int senseNearbyTowersStat(MapLocation location) {
     	MapLocation[] enemyTowers = rc.senseEnemyTowerLocations();
@@ -143,7 +156,7 @@ public abstract class BaseRobot {
         for (MapLocation tower : enemyTowers) {
             if (newLocation.distanceSquaredTo(tower)<=24)
                 count += 1;
-            if (newLocation2.distanceSquaredTo(tower)<=24)
+            else if (newLocation2.distanceSquaredTo(tower)<=24)
                 count+= 1;
         }
         if (newLocation.distanceSquaredTo(rc.senseEnemyHQLocation())<=24) {
