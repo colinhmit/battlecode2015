@@ -32,7 +32,7 @@ public class HQRobot extends BaseRobot {
 			
 			rc.broadcast(200, 0);
 			
-			int beaversBuilt = rc.readBroadcast(39);
+			int beaversBuilt = rc.readBroadcast(45);
 			
 			
 		    int numMinerFactories = rc.readBroadcast(MINER_FACT_CURRENT_CHAN);
@@ -71,7 +71,7 @@ public class HQRobot extends BaseRobot {
                 Direction newDir =  getSpawnDirection(RobotType.BEAVER);
                 if (newDir != null) {
                     rc.spawn(newDir, RobotType.BEAVER);
-                    rc.broadcast(39, beaversBuilt+1);
+                    rc.broadcast(45, beaversBuilt+1);
                 }
 
             }
