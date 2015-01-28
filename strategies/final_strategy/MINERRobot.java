@@ -41,6 +41,8 @@ public class MINERRobot extends BaseRobot {
 				rc.broadcast(MINERS_TO_ATTACK_X, currentLocation.x);
 				rc.broadcast(MINERS_TO_ATTACK_Y, currentLocation.y);
 				rc.broadcast(NUM_MINERS_IN_POSITION, numMiners);
+				rc.broadcast(MINER_COMMAND, 1);
+
 			}
             if (enemyRobots.length>0 && rc.isWeaponReady()) {
                 attackLeastHealthEnemy(enemyRobots);
