@@ -26,10 +26,10 @@ public class SUPPLIERRobot extends BaseRobot {
 	@Override
 	public void run() {
 		try{
-			rc.setIndicatorString(0, "Supplier");
+			//rc.setIndicatorString(0, "Supplier");
 			int startSupplyQueue = rc.readBroadcast(SUPPLIER_START_QUEUE_CHAN);
 			int endSupplyQueue = rc.readBroadcast(SUPPLIER_END_QUEUE_CHAN);
-			System.out.println(suppliedLocation);
+			//System.out.println(suppliedLocation);
 			RobotInfo[] nearbyAllies = rc.senseNearbyRobots(rc.getLocation(),GameConstants.SUPPLY_TRANSFER_RADIUS_SQUARED,rc.getTeam());
 			if(Clock.getRoundNum() < 1200){
 			if(startSupplyQueue != endSupplyQueue && suppliedLocation){
@@ -37,11 +37,11 @@ public class SUPPLIERRobot extends BaseRobot {
 				int y = rc.readBroadcast(endSupplyQueue -1);
 				locationSupplying = new MapLocation(x,y);
 				suppliedLocation = false;
-				System.out.println("new Location to supply");
+				//System.out.println("new Location to supply");
 				rc.broadcast(SUPPLIER_END_QUEUE_CHAN, rc.readBroadcast(SUPPLIER_END_QUEUE_CHAN)-2);
 			}
-			System.out.println("start queue" + startSupplyQueue);
-			System.out.println("end queue" + endSupplyQueue);
+			//System.out.println("start queue" + startSupplyQueue);
+			//System.out.println("end queue" + endSupplyQueue);
 			if(rc.getHealth() <=10){
 				isStillSupplying = false;
 				if(rc.getLocation().distanceSquaredTo(this.myHQ)<= GameConstants.SUPPLY_TRANSFER_RADIUS_SQUARED){

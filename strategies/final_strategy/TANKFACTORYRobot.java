@@ -31,8 +31,8 @@ public class TANKFACTORYRobot extends BaseRobot {
             }
 
 		} catch (Exception e) {
-			//                    System.out.println("caught exception before it killed us:");
-			//                    System.out.println(rc.getRobot().getID());
+			//                    //System.out.println("caught exception before it killed us:");
+			//                    //System.out.println(rc.getRobot().getID());
 			//e.printStackTrace();
 		}
 	}

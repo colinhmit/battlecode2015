@@ -31,30 +31,30 @@ public class RobotPlayer {
 
 
         // if (rc.getType() == RobotType.HQ){
-        //  System.out.println("I am HQ at string:" + rc.senseHQLocation().toString());
-        //  System.out.println("I am HQ at :" + loc);
+        //  //System.out.println("I am HQ at string:" + rc.senseHQLocation().toString());
+        //  //System.out.println("I am HQ at :" + loc);
         //  theMap = MapLocation.getAllMapLocationsWithinRadiusSq(loc, 10000);
         //  for (MapLocation mapLoc:theMap){
         //      if (rc.senseTerrainTile(mapLoc)==TerrainTile.UNKNOWN){
         //          numUnknown++;
         //      }else if (rc.senseTerrainTile(mapLoc)==TerrainTile.OFF_MAP){
         //          numOffmap++;
-        //          System.out.println(mapLoc);
+        //          //System.out.println(mapLoc);
         //      }else if (rc.senseTerrainTile(mapLoc)==TerrainTile.NORMAL){
         //          numNormal++;
         //      }
         //      else if (rc.senseTerrainTile(mapLoc)==TerrainTile.VOID){
         //          numVoid++;
         //      }
-        //      //System.out.println(mapLoc.toString());
+        //      ////System.out.println(mapLoc.toString());
         //  }
-        //  System.out.println(numUnknown);
-        //  System.out.println(numOffmap);
-        //  System.out.println(numNormal);
-        //  System.out.println(numVoid);
+        //  //System.out.println(numUnknown);
+        //  //System.out.println(numOffmap);
+        //  //System.out.println(numNormal);
+        //  //System.out.println(numVoid);
 
         // } else if (rc.getType() == RobotType.TOWER){
-        //  System.out.println("I am tower at :" + loc);
+        //  //System.out.println("I am tower at :" + loc);
         // }
 
         try {

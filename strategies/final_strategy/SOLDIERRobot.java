@@ -41,8 +41,8 @@ public class SOLDIERRobot extends BaseRobot {
 //		reachedTower = false;
 //		reachedTowerOrVoid = false;
 //		twoTowerTargets = getFurthestTowersFromEachOther();
-//		System.out.println("target 1 " +twoTowerTargets[0].x + " "+ twoTowerTargets[0].y);
-//		System.out.println("target 2 " + twoTowerTargets[1].x + " "+ twoTowerTargets[1].y);
+//		//System.out.println("target 1 " +twoTowerTargets[0].x + " "+ twoTowerTargets[0].y);
+//		//System.out.println("target 2 " + twoTowerTargets[1].x + " "+ twoTowerTargets[1].y);
 //		reachedFirstTower = false;
 //		reachedSecondTower = false;
 //		targetOne = true;
@@ -72,8 +72,8 @@ public class SOLDIERRobot extends BaseRobot {
 //			if(minerLoc.equals(location) && numMiners==0){
 //				rc.broadcast(NUM_MINERS_IN_POSITION, 0);
 //			}
-//			rc.setIndicatorString(0, "length of enemies " + new Integer(enemiesAround.length).toString());
-//			rc.setIndicatorString(2, "number Miners " + new Integer(numMiners).toString());
+//			//rc.setIndicatorString(0, "length of enemies " + new Integer(enemiesAround.length).toString());
+//			//rc.setIndicatorString(2, "number Miners " + new Integer(numMiners).toString());
 			int currentNumMiners = rc.readBroadcast(NUM_MINERS_IN_POSITION);
 			minerCommand = rc.readBroadcast(MINER_COMMAND);
 
@@ -159,7 +159,7 @@ public class SOLDIERRobot extends BaseRobot {
 						NavSystem.dumbNav(location.add(robotToAvoid.location.directionTo(location)));
 
 					} else{
-						//rc.setIndicatorString(0, "not avoiding tank first else if");
+						////rc.setIndicatorString(0, "not avoiding tank first else if");
 //						RobotInfo robotToMoveTowards = enemiesAround[0];
 //						int distanceToRobot = location.distanceSquaredTo(robotToMoveTowards.location);
 //						int numMiners =  0;
@@ -181,7 +181,7 @@ public class SOLDIERRobot extends BaseRobot {
 //								}
 //							} 
 //						}
-						//rc.setIndicatorString(1,"bytecode after " + Clock.getBytecodesLeft());
+						////rc.setIndicatorString(1,"bytecode after " + Clock.getBytecodesLeft());
 						if(numMiners>= currentNumMiners){
 							rc.broadcast(MINERS_TO_ATTACK_X, location.x);
 							rc.broadcast(MINERS_TO_ATTACK_Y, location.y);
@@ -192,7 +192,7 @@ public class SOLDIERRobot extends BaseRobot {
 //						Direction dirToMove = NavSystem.dumbNav(robotToMoveTowards.location);
 //						move(dirToMove, location);
 						NavSystem.dumbNav(robotToMoveTowards.location);
-						//rc.setIndicatorString(1,"bytecode after " + Clock.getBytecodesLeft());
+						////rc.setIndicatorString(1,"bytecode after " + Clock.getBytecodesLeft());
 					}
 					}
 				}
@@ -291,8 +291,8 @@ public class SOLDIERRobot extends BaseRobot {
 			rc.broadcast(SOLDIER_CURRENT_CHAN, rc.readBroadcast(SOLDIER_CURRENT_CHAN)+1);
 
 		} catch (Exception e) {
-			//                    System.out.println("caught exception before it killed us:");
-			//                    System.out.println(rc.getRobot().getID());
+			//                    //System.out.println("caught exception before it killed us:");
+			//                    //System.out.println(rc.getRobot().getID());
 			//e.printStackTrace();
 		}
 	}

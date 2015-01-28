@@ -90,7 +90,7 @@ public class Functions {
                     line+=i;
                 }
             }
-            System.out.println(line);
+            //System.out.println(line);
         }
     }
 

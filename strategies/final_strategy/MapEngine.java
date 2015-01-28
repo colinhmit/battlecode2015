@@ -38,11 +38,11 @@ public class MapEngine {
 		getMapParams();
 		getMapEdges();
 		setMapDim();
-		//System.out.println("test");
+		////System.out.println("test");
 		//Functions.displayArray(map);
-		//System.out.println("test2");
-		//System.out.println(xdim);
-		//System.out.println(ydim);
+		////System.out.println("test2");
+		////System.out.println(xdim);
+		////System.out.println(ydim);
 	}
 	public static void STRUCTinit(RobotController myRC) {
 		rc = myRC;

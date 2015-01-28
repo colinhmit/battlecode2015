@@ -56,14 +56,14 @@ public class NavSystem {
                 MapLocation m = snailTrail.get(i);
                 if(!m.equals(rc.getLocation())){
                     if(resultingLocation.isAdjacentTo(m)||resultingLocation.equals(m)||resultingLocation.distanceSquaredTo(DataCache.enemyHQ)<=16){
-                        //rc.setIndicatorString(2, "adjacentto");
+                        ////rc.setIndicatorString(2, "adjacentto");
                         return false;
                     }
                 }
             }
         }
         //if you get through the loop, then dir is not adjacent to the icky snail trail
-        //rc.setIndicatorString(2, "canmove in " + dir);
+        ////rc.setIndicatorString(2, "canmove in " + dir);
         return rc.canMove(dir);
     }
 
@@ -74,21 +74,21 @@ public class NavSystem {
             snailTrail.remove(0);
             snailTrail.add(rc.getLocation());
             for(int directionalOffset:directionalLooks){
-                //rc.setIndicatorString(0, "notmoving");
-                //rc.setIndicatorString(2, "notmoving in a direction");
+                ////rc.setIndicatorString(0, "notmoving");
+                ////rc.setIndicatorString(2, "notmoving in a direction");
                 int forwardInt = chosenDirection.ordinal();
                 Direction trialDir = allDirections[(forwardInt+directionalOffset+8)%8];
                 if(rc.getType() == RobotType.SOLDIER){
-                    rc.setIndicatorString(1, "Trying to get to tower");
+                    //rc.setIndicatorString(1, "Trying to get to tower");
                 	if(canMove(trialDir,selfAvoiding,rc) && BaseRobot.safeToMoveTo(rc.getLocation().add(trialDir))==0){
                 		rc.move(trialDir);
-                        rc.setIndicatorString(1, "Got to tower");
+                        //rc.setIndicatorString(1, "Got to tower");
                 		break;
                 	}
                 }
                 else if(canMove(trialDir,selfAvoiding,rc)){
-                    //rc.setIndicatorString(0, "moving in" + trialDir);
-                    //rc.setIndicatorString(2, String.valueOf(rc.canMove(trialDir)));
+                    ////rc.setIndicatorString(0, "moving in" + trialDir);
+                    ////rc.setIndicatorString(2, String.valueOf(rc.canMove(trialDir)));
                     //
                     rc.move(trialDir);
                     //snailTrail.remove(0);
@@ -96,9 +96,9 @@ public class NavSystem {
                     break;
                 }
 
-                //rc.setIndicatorString(2, String.valueOf(rc.canMove(trialDir)));
+                ////rc.setIndicatorString(2, String.valueOf(rc.canMove(trialDir)));
             }
-            //System.out.println("I am at "+rc.getLocation()+", trail "+snailTrail.get(0)+snailTrail.get(1)+snailTrail.get(2));
+            ////System.out.println("I am at "+rc.getLocation()+", trail "+snailTrail.get(0)+snailTrail.get(1)+snailTrail.get(2));
         }
     }
 

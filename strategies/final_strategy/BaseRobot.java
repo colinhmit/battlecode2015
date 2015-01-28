@@ -439,7 +439,7 @@ public abstract class BaseRobot {
 	    				transferAmount = Math.min((rc.getSupplyLevel()-ri.supplyLevel)/2, 2500);
 	    				
 	    			}
-	    			System.out.println("transferring " + transferAmount );
+	    			//System.out.println("transferring " + transferAmount );
 	    			rc.transferSupplies((int)transferAmount, ri.location);
 	    		} else if(ri.type == RobotType.DRONE){
 	    			transferAmount = (2000 - Clock.getRoundNum())*4;
@@ -532,16 +532,16 @@ public abstract class BaseRobot {
         
         for(MapLocation towerLoc : enemyTowerLocations) {
             if(towerLoc.distanceSquaredTo(myLocation) <= 24) {
-                rc.setIndicatorString(1, "true"); 
+                //rc.setIndicatorString(1, "true"); 
                 return true;
             }
         }
         
         if(rc.senseEnemyHQLocation().distanceSquaredTo(myLocation) <= 24) {
-            rc.setIndicatorString(1, "true");
+            //rc.setIndicatorString(1, "true");
             return true;
         }
-        rc.setIndicatorString(1, "false");
+        //rc.setIndicatorString(1, "false");
         return false;
         //return enemyTerritory.contains(loc);
     }

@@ -31,8 +31,8 @@ public class HELIPADRobot extends BaseRobot {
             rc.broadcast(HELIPAD_CURRENT_CHAN, rc.readBroadcast(HELIPAD_CURRENT_CHAN)+1);
             rc.yield();		    
 		} catch (Exception e) {
-			//                    System.out.println("caught exception before it killed us:");
-			//                    System.out.println(rc.getRobot().getID());
+			//                    //System.out.println("caught exception before it killed us:");
+			//                    //System.out.println(rc.getRobot().getID());
 			//e.printStackTrace();
 		}
 	}

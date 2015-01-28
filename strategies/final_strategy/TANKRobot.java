@@ -86,7 +86,7 @@ public class TANKRobot extends BaseRobot {
                     } else if (rc.senseNearbyRobots(20, this.theirTeam).length < 1 ) {
                         //MapLocation ourClosest = getOurClosestTowerToThem();
                        // RobotInfo[] neighbors = rc.senseNearbyRobots(rc.getLocation(),1,rc.getTeam());
-                        //System.out.println(neighbors.length);
+                        ////System.out.println(neighbors.length);
                         //int numTanks = numTanksSurrounding(rc,neighbors);
                         double radiusOfTanks = numTanks/Math.PI;
                         for(MapLocation towerLoc : rc.senseEnemyTowerLocations()){
@@ -124,8 +124,8 @@ public class TANKRobot extends BaseRobot {
 
 
 		} catch (Exception e) {
-			//                    System.out.println("caught exception before it killed us:");
-			//                    System.out.println(rc.getRobot().getID());
+			//                    //System.out.println("caught exception before it killed us:");
+			//                    //System.out.println(rc.getRobot().getID());
 			//e.printStackTrace();
 		}
 	}
