@@ -29,6 +29,8 @@ public class SOLDIERRobot extends BaseRobot {
 	public MapLocation[] towers;
 	public MapLocation target;
 
+	public int minerCommand;
+
 
 	public SOLDIERRobot(RobotController rc) throws GameActionException {
 		super(rc);
@@ -73,6 +75,8 @@ public class SOLDIERRobot extends BaseRobot {
 //			rc.setIndicatorString(0, "length of enemies " + new Integer(enemiesAround.length).toString());
 //			rc.setIndicatorString(2, "number Miners " + new Integer(numMiners).toString());
 			int currentNumMiners = rc.readBroadcast(NUM_MINERS_IN_POSITION);
+			minerCommand = rc.readBroadcast(MINER_COMMAND);
+
 //			if(numMiners>= currentNumMiners){
 //				rc.broadcast(MINERS_TO_ATTACK_X, location.x);
 //				rc.broadcast(MINERS_TO_ATTACK_Y, location.y);
@@ -103,6 +107,14 @@ public class SOLDIERRobot extends BaseRobot {
 						NavSystem.dumbNav(target);
 					}
 				} else {
+					if (minerCommand == 1){
+						if (alliesAround.length>3){
+							rc.broadcast(MINER_COMMAND, 0);
+						}
+						else {
+							NavSystem.dumbNav(minerLoc);
+						}
+					} else{
 					boolean tanksOrLaunchers = false;
 					RobotInfo robotToAvoid = null;
 					RobotInfo robotToMoveTowards = enemiesAround[0];
@@ -174,11 +186,14 @@ public class SOLDIERRobot extends BaseRobot {
 							rc.broadcast(MINERS_TO_ATTACK_X, location.x);
 							rc.broadcast(MINERS_TO_ATTACK_Y, location.y);
 							rc.broadcast(NUM_MINERS_IN_POSITION, numMiners);
+							rc.broadcast(MINER_COMMAND, 1);
+
 						}
 //						Direction dirToMove = NavSystem.dumbNav(robotToMoveTowards.location);
 //						move(dirToMove, location);
 						NavSystem.dumbNav(robotToMoveTowards.location);
 						//rc.setIndicatorString(1,"bytecode after " + Clock.getBytecodesLeft());
+					}
 					}
 				}
 
@@ -265,6 +280,8 @@ public class SOLDIERRobot extends BaseRobot {
 						rc.broadcast(MINERS_TO_ATTACK_X, location.x);
 						rc.broadcast(MINERS_TO_ATTACK_Y, location.y);
 						rc.broadcast(NUM_MINERS_IN_POSITION, numMiners);
+						rc.broadcast(MINER_COMMAND, 1);
+
 					}
 				}
 			}

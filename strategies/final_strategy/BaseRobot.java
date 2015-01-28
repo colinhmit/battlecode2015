@@ -38,6 +38,8 @@ public abstract class BaseRobot {
     public final static int MINERS_TO_ATTACK_X = 50;
     public final static int MINERS_TO_ATTACK_Y = 51;
     public final static int NUM_MINERS_IN_POSITION = 52;
+
+    public final static int MINER_COMMAND = 50010;
     
     public static int TESTCHANNEL = 2000;
     
