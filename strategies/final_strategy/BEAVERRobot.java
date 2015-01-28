@@ -38,9 +38,7 @@ public class BEAVERRobot extends BaseRobot {
 				int minerFactoriesBuilt = rc.readBroadcast(40);
 				int barracksBuilt = rc.readBroadcast(41);
 				int tankFactoriesBuilt = rc.readBroadcast(42);
-				int helipadsBuilt = rc.readBroadcast(43);
 				int supplyDepotsBuilt = rc.readBroadcast(44);
-				int aerospaceLabsBuilt = rc.readBroadcast(45);
 				RobotInfo[] enemyRobots = getEnemiesInAttackingRange(RobotType.BEAVER);
 				
 
@@ -55,7 +53,7 @@ public class BEAVERRobot extends BaseRobot {
                         rc.broadcast(40, minerFactoriesBuilt+1);
                         building=true;
                     }			   
-			    } else if (rc.hasBuildRequirements(RobotType.SUPPLYDEPOT) && supplyDepotsBuilt < 2 || ore>2000 && supplyDepotsBuilt < 5 || ore>2500 && supplyDepotsBuilt<7) {
+			    } else if (rc.hasBuildRequirements(RobotType.SUPPLYDEPOT) && supplyDepotsBuilt < 1 || rc.hasBuildRequirements(RobotType.SUPPLYDEPOT) && minerFactoriesBuilt>0 && supplyDepotsBuilt<3 || ore>1200 && supplyDepotsBuilt < 4 || ore>2000 && supplyDepotsBuilt<5 || ore>2200 && supplyDepotsBuilt<7) {
                     Direction buildDirection = getBuildDirectionCheckerBoard(RobotType.SUPPLYDEPOT);
                     if (buildDirection!=null) {
                         rc.build(buildDirection, RobotType.SUPPLYDEPOT);
